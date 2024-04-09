@@ -1,5 +1,7 @@
 package courier;
 
+import com.github.javafaker.Faker;
+import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -12,8 +14,9 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class LoginCourierTest {
+    static Faker faker = new Faker();
     String id = null;
-    private final String login = randomData(9);
+    private final String login = faker.name().username();
     private final String password = "Password!";
     private final String incorrectLogin = randomData(11);
     private final String incorrectPassword = randomData(7);
@@ -23,6 +26,7 @@ public class LoginCourierTest {
         return RandomStringUtils.randomAlphanumeric(length);
     }
 
+    @Step("Create a new courier")
     public static void createCourier(Courier courier) {
         given()
                 .header("Content-Type", "application/json")
@@ -33,6 +37,7 @@ public class LoginCourierTest {
                 .post(COURIER);
     }
 
+    @Step("Login as a courier")
     public static Response loginCourier(Courier courier) {
         return given()
                 .header("Content-Type", "application/json")
@@ -43,6 +48,7 @@ public class LoginCourierTest {
                 .post(COURIER_LOGIN);
     }
 
+    @Step("Delete a courier")
     public static void deleteCourier(String courierId) {
         given()
                 .baseUri(HOME_URL)

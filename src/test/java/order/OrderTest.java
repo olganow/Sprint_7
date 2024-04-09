@@ -1,6 +1,7 @@
 package order;
 
-import io.qameta.allure.junit4.DisplayName;
+import com.github.javafaker.Faker;
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -17,12 +18,12 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 
 @RunWith(Parameterized.class)
 public class OrderTest {
-
-    private static final String FIRST_NAME = "Маша";
-    private static final String LAST_NAME = "Миронова";
+    static Faker faker = new Faker();
+    private static final String FIRST_NAME = faker.name().firstName();
+    private static final String LAST_NAME = faker.name().lastName();
     private static final String ADDRESS = "г. Москва, Вятский пер, д.4 ";
     private static final String METRO_STATION = "Савёловская";
-    private static final String PHONE_NUMBER = "12345678901";
+    private static final String PHONE_NUMBER = faker.phoneNumber().cellPhone();
     private static final int RENT_TIME = 1;
     private static final String DELIVERY_DATE = "2024-05-29";
     private static final String COMMENT_FOR_COURIER = "Вход со двора";
@@ -34,6 +35,7 @@ public class OrderTest {
         this.color = color;
     }
 
+    @Step("Add order")
     public static Response addOrder(Order order) {
         return given()
                 .contentType(ContentType.JSON)
@@ -58,8 +60,8 @@ public class OrderTest {
     Order order = new Order(FIRST_NAME, LAST_NAME, ADDRESS, METRO_STATION, PHONE_NUMBER, RENT_TIME, DELIVERY_DATE,
             COMMENT_FOR_COURIER, color);
 
+    @Step("Create order")
     @Test
-    @DisplayName("Add order")
     public void createOrder() {
         Response response = addOrder(order);
         orderNumber = response
@@ -74,6 +76,7 @@ public class OrderTest {
                 .body("track", notNullValue());
     }
 
+    @Step("Cancel order")
     @After
     public void cancelOrder() {
         RestAssured.baseURI = HOME_URL;

@@ -1,5 +1,6 @@
 package order;
 
+import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
@@ -15,6 +16,7 @@ import static org.junit.Assert.*;
 
 public class GetOrdersTest {
 
+    @Step("Get orders list")
     public ValidatableResponse getOrdersList() {
         return given()
                 .contentType(ContentType.JSON)
@@ -32,7 +34,7 @@ public class GetOrdersTest {
         int actualStatusCode = response.extract().statusCode();
         assertEquals(200, actualStatusCode);
 
-        List<HashMap> orderList = response.extract().path("orders");
+        List<HashMap> orderList = getOrderListFromResponse(response);
         assertNotNull(orderList);
 
         if (!orderList.isEmpty()) {
@@ -40,4 +42,8 @@ public class GetOrdersTest {
         }
     }
 
+    @Step("Extract order list from response")
+    public List<HashMap> getOrderListFromResponse(ValidatableResponse response) {
+        return response.extract().path("orders");
+    }
 }
